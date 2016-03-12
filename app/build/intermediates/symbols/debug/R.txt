@@ -424,7 +424,8 @@ int drawable abc_textfield_default_mtrl_alpha 0x7f02003a
 int drawable abc_textfield_search_activated_mtrl_alpha 0x7f02003b
 int drawable abc_textfield_search_default_mtrl_alpha 0x7f02003c
 int drawable abc_textfield_search_material 0x7f02003d
-int drawable notification_template_icon_bg 0x7f02003e
+int drawable background 0x7f02003e
+int drawable notification_template_icon_bg 0x7f02003f
 int id action0 0x7f0c0050
 int id action_bar 0x7f0c003e
 int id action_bar_activity_content 0x7f0c0000
@@ -478,6 +479,7 @@ int id never 0x7f0c001e
 int id none 0x7f0c000e
 int id normal 0x7f0c000a
 int id parentPanel 0x7f0c002b
+int id progressBar 0x7f0c005d
 int id progress_circular 0x7f0c0005
 int id progress_horizontal 0x7f0c0006
 int id radio 0x7f0c0038
@@ -509,6 +511,7 @@ int id tabMode 0x7f0c000b
 int id text 0x7f0c005a
 int id text2 0x7f0c0058
 int id textSpacerNoButtons 0x7f0c0031
+int id textView 0x7f0c005e
 int id text_view 0x7f0c004e
 int id time 0x7f0c0056
 int id title 0x7f0c002a
@@ -559,7 +562,8 @@ int layout notification_template_part_time 0x7f040020
 int layout select_dialog_item_material 0x7f040021
 int layout select_dialog_multichoice_material 0x7f040022
 int layout select_dialog_singlechoice_material 0x7f040023
-int layout support_simple_spinner_dropdown_item 0x7f040024
+int layout splash_screen 0x7f040024
+int layout support_simple_spinner_dropdown_item 0x7f040025
 int mipmap ic_launcher 0x7f030000
 int string abc_action_bar_home_description 0x7f060000
 int string abc_action_bar_home_description_format 0x7f060001
