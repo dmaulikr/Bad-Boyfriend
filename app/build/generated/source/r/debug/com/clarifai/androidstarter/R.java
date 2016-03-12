@@ -1563,7 +1563,8 @@ containing a value of this type.
         public static final int abc_textfield_search_activated_mtrl_alpha=0x7f02003b;
         public static final int abc_textfield_search_default_mtrl_alpha=0x7f02003c;
         public static final int abc_textfield_search_material=0x7f02003d;
-        public static final int notification_template_icon_bg=0x7f02003e;
+        public static final int background=0x7f02003e;
+        public static final int notification_template_icon_bg=0x7f02003f;
     }
     public static final class id {
         public static final int action0=0x7f0c0050;
@@ -1619,6 +1620,7 @@ containing a value of this type.
         public static final int none=0x7f0c000e;
         public static final int normal=0x7f0c000a;
         public static final int parentPanel=0x7f0c002b;
+        public static final int progressBar=0x7f0c005d;
         public static final int progress_circular=0x7f0c0005;
         public static final int progress_horizontal=0x7f0c0006;
         public static final int radio=0x7f0c0038;
@@ -1650,6 +1652,7 @@ containing a value of this type.
         public static final int text=0x7f0c005a;
         public static final int text2=0x7f0c0058;
         public static final int textSpacerNoButtons=0x7f0c0031;
+        public static final int textView=0x7f0c005e;
         public static final int text_view=0x7f0c004e;
         public static final int time=0x7f0c0056;
         public static final int title=0x7f0c002a;
@@ -1704,7 +1707,8 @@ containing a value of this type.
         public static final int select_dialog_item_material=0x7f040021;
         public static final int select_dialog_multichoice_material=0x7f040022;
         public static final int select_dialog_singlechoice_material=0x7f040023;
-        public static final int support_simple_spinner_dropdown_item=0x7f040024;
+        public static final int splash_screen=0x7f040024;
+        public static final int support_simple_spinner_dropdown_item=0x7f040025;
     }
     public static final class mipmap {
         public static final int ic_launcher=0x7f030000;

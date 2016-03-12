@@ -4,7 +4,8 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:gravity="center"
-              tools:context=".RecognitionActivity">
+              tools:context=".RecognitionActivity"
+    android:background="@drawable/background">
 
   <ImageView
       android:id="@+id/image_view"
@@ -23,7 +24,7 @@
       android:layout_width="match_parent"
       android:layout_height="100dp"
       android:layout_weight="0.4"
-      />
+      android:editable="false" />
 
   <Button
       android:id="@+id/select_button"
@@ -38,4 +39,4 @@
       />
 
 </LinearLayout>
-<!-- From: file:/Users/MARIO/GitHub/Bad-Boyfriend/app/src/main/res/layout/activity_recognition.xml -->
+<!-- From: file:/Users/FrankMAC/Documents/Bad-Boyfriend/app/src/main/res/layout/activity_recognition.xml -->
