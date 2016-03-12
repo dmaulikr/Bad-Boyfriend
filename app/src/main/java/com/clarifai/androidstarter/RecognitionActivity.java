@@ -1,6 +1,7 @@
 package com.clarifai.androidstarter;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -43,6 +44,7 @@ public class RecognitionActivity extends Activity {
     private ImageView imageView;
     private TextView textView;
     private Bitmap currentBitmap;
+    private ProgressDialog progressDialog;
 
     private Intent intent;
 
@@ -51,9 +53,7 @@ public class RecognitionActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recognition);
         ArrayList<String> imagePaths = getImagesPath(this);
-
-
-        textView = (TextView) findViewById(R.id.text_view);
+        //textView = (TextView) findViewById(R.id.text_view);
 
         for (int i = 1; i < imagePaths.size(); i++) {
             File imgFile = new File(imagePaths.get(i));
@@ -66,15 +66,53 @@ public class RecognitionActivity extends Activity {
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(), bmOptions);
-            imageView = (ImageView) findViewById(R.id.image_view);
-            View layout = findViewById(R.id.lolwtf);
+            //imageView = (ImageView) findViewById(R.id.image_view);
+            //View layout = findViewById(R.id.lolwtf);
             myBitmap = Bitmap.createScaledBitmap(myBitmap, 200, 200, true);
             imageView.setImageBitmap(myBitmap);
-
-
         }
 
+        //Creates loading button, and displays loading bar
+        Button downloadButton = (Button)findViewById(R.id.select_button_displayProgressDialog);
+        downloadButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v)
+            {
+                progressDialog = new ProgressDialog(RecognitionActivity.this);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progressDialog.setTitle("Processing");
+                progressDialog.setMessage("Analysing... Please Wait");
+                progressDialog.show();
+                progressThread thread = new progressThread();
+                thread.start();
+            }
+        });
+    }
 
+    //Progress Thread for loading screen
+    private class progressThread extends Thread{
+        public void run(){
+            for (int count=0;count<=100;count++){
+                try {
+                    Thread.sleep(100);
+                    progressDialog.setProgress(count);
+                }catch(InterruptedException ex){
+                    ex.printStackTrace();
+                }
+            }
+            //Enter what you want the program to do after loading screen
+            //Insert Code Here *****
+            final Intent intent = new Intent(Intent.ACTION_PICK, Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, CODE_PICK);
+
+
+
+
+
+
+
+
+            //
+        }
     }
    /* textView = (TextView) findViewById(R.id.text_view);
     ArrayList<String> imagePaths = getImagesPath(this);

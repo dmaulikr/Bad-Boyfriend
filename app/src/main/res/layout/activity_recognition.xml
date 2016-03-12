@@ -3,44 +3,36 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              android:gravity="center"
+              android:gravity="center_vertical|center"
               tools:context=".RecognitionActivity"
-              android:id="@+id/lolwtf"
->
+    android:background="@drawable/background">
 
-    <!--
-         android:background="@drawable/background"
-     -->
+    <TextView
+        android:layout_width="290dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Welcome to Bad Boyfriend. Press the start button to begin a full photo analysis."
+        android:id="@+id/textView2"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="60dp"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_marginBottom="150dp" />
 
-  <ImageView
-      android:id="@+id/image_view"
-      android:layout_width="match_parent"
-      android:layout_height="100dp"
-      android:layout_weight="1"
-      android:scaleType="centerCrop"
-      android:contentDescription="@string/user_image"/>
-
-  <TextView
-      android:id="@+id/text_view"
-      android:textColor="#fff"
-      android:textSize="16sp"
-      android:gravity="center"
-      android:padding="16dp"
-      android:layout_width="match_parent"
-      android:layout_height="100dp"
-      android:layout_weight="0.4"
-      android:editable="false" />
-
-  <Button
-      android:id="@+id/select_button"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:background="#3d88ec"
-      android:text="@string/select_image"
-      android:layout_marginTop="8dp"
+    <Button
+      android:id="@+id/select_button_displayProgressDialog"
+      android:layout_width="275dp"
+      android:layout_height="88dp"
+      android:background="@drawable/bkg"
+        android:layout_marginTop="8dp"
       android:layout_marginBottom="16dp"
       android:paddingLeft="24dp"
       android:paddingRight="24dp"
-      />
+        android:singleLine="false"
+        android:longClickable="true"
+        android:clickable="true"
+        android:text="Start"
+        android:textSize="50dp" />
 
 </LinearLayout>
