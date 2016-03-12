@@ -109,7 +109,7 @@ public class RecognitionActivity extends Activity {
       // Scale down the image. This step is optional. However, sending large images over the
       // network is slow and  does not significantly improve recognition performance.
       Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 320,
-          320 * bitmap.getHeight() / bitmap.getWidth(), true);
+              320 * bitmap.getHeight() / bitmap.getWidth(), true);
 
       // Compress the image as a JPEG.
       ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -117,7 +117,7 @@ public class RecognitionActivity extends Activity {
       byte[] jpeg = out.toByteArray();
 
       // Send the JPEG to Clarifai and return the result.
-      return client.recognize(new RecognitionRequest(jpeg)).get(0);
+      return client.recognize(new RecognitionRequest(jpeg).setModel("nsfw-v0.1")).get(0);
     } catch (ClarifaiException e) {
       Log.e(TAG, "Clarifai error", e);
       return null;
@@ -126,14 +126,23 @@ public class RecognitionActivity extends Activity {
 
   /** Updates the UI by displaying tags for the given result. */
   private void updateUIForResult(RecognitionResult result) {
+    //String bestHashTag = "#";
     if (result != null) {
       if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
         // Display the list of tags in the UI.
         StringBuilder b = new StringBuilder();
         for (Tag tag : result.getTags()) {
-          b.append(b.length() > 0 ? ", " : "").append(tag.getName());
+          Double prob = tag.getProbability();
+
+          b.append(b.length() > 0 ? "" : "").append(tag.getName() + prob);
+
+          b.append(nsfwProbability(prob));
+          /*if (tag.toString() != ""){
+            bestHashTag = bestHashTag + tag;
+          }*/
+          //b.append(b.length() > 0 ? "" : "").append(tag.getName());
         }
-        textView.setText("Tags:\n" + b);
+        textView.setText("Tags:\n#" + b);
       } else {
         Log.e(TAG, "Clarifai: " + result.getStatusMessage());
         textView.setText("Sorry, there was an error recognizing your image.");
@@ -142,5 +151,18 @@ public class RecognitionActivity extends Activity {
       textView.setText("Sorry, there was an error recognizing your image.");
     }
     selectButton.setEnabled(true);
+  }
+
+  private String nsfwProbability(double probability){
+    if(probability >= 0.85){
+
+      return "Not the safest thing to put on the internet!";
+    }
+    else if (probability <= 0.15){
+      return "Okie Dokie Artichokie!";
+    }
+    else {
+      return "idk bro!";
+    }
   }
 }
