@@ -15,7 +15,7 @@ public class Splash extends AppCompatActivity{
         Thread myTread = new Thread(){
             public void run(){
                 try{
-                    sleep(3000);
+                    sleep(3500);
                     Intent startMainScreen = new Intent(getApplicationContext(), RecognitionActivity.class);
                     startActivity(startMainScreen);
                     finish();
