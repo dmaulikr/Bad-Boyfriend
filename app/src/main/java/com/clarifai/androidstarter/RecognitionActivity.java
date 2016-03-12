@@ -41,35 +41,36 @@ public class RecognitionActivity extends Activity {
   private Button selectButton;
   private ImageView imageView;
   private TextView textView;
+  private Bitmap currentBitmap;
 
+  private Intent intent;
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_recognition);
     textView = (TextView) findViewById(R.id.text_view);
     ArrayList<String> imagePaths = getImagesPath(this);
     textView = (TextView) findViewById(R.id.text_view);
-
     for (int i = 1; i < imagePaths.size(); i++) {
       textView.setText(imagePaths.get(i-1)+ " \n" + imagePaths.get(i));
-
     }
+
   }
 
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+   protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
     super.onActivityResult(requestCode, resultCode, intent);
     if (requestCode == CODE_PICK && resultCode == RESULT_OK) {
-      // The user picked an image. Send it to Clarifai for recognition.
-      Log.d(TAG, "User picked image: " + intent.getData());
+
       Bitmap bitmap = loadBitmapFromUri(intent.getData());
+      currentBitmap = bitmap;
       if (bitmap != null) {
         imageView.setImageBitmap(bitmap);
-        textView.setText("Recognizing...");
+        textView.setText(intent.toString());
         selectButton.setEnabled(false);
 
         // Run recognition on a background thread since it makes a network call.
         new AsyncTask<Bitmap, Void, RecognitionResult>() {
           @Override protected RecognitionResult doInBackground(Bitmap... bitmaps) {
-            return recognizeBitmap(bitmaps[0]);
+            return recognizeBitmap(bitmaps[0], "nsfw-v0.1");
           }
           @Override protected void onPostExecute(RecognitionResult result) {
             updateUIForResult(result);
@@ -80,6 +81,7 @@ public class RecognitionActivity extends Activity {
       }
     }
   }
+
 
   /** Loads a Bitmap from a content URI returned by the media picker. */
   private Bitmap loadBitmapFromUri(Uri uri) {
@@ -103,9 +105,10 @@ public class RecognitionActivity extends Activity {
     }
     return null;
   }
+  //"nsfw-v0.1"
 
   /** Sends the given bitmap to Clarifai for recognition and returns the result. */
-  private RecognitionResult recognizeBitmap(Bitmap bitmap) {
+  private RecognitionResult recognizeBitmap(Bitmap bitmap, String model) {
     try {
       // Scale down the image. This step is optional. However, sending large images over the
       // network is slow and  does not significantly improve recognition performance.
@@ -118,7 +121,7 @@ public class RecognitionActivity extends Activity {
       byte[] jpeg = out.toByteArray();
 
       // Send the JPEG to Clarifai and return the result.
-      return client.recognize(new RecognitionRequest(jpeg).setModel("nsfw-v0.1")).get(0);
+      return client.recognize(new RecognitionRequest(jpeg).setModel(model)).get(0);
     } catch (ClarifaiException e) {
       Log.e(TAG, "Clarifai error", e);
       return null;
@@ -141,11 +144,12 @@ public class RecognitionActivity extends Activity {
           Double NSFWProb = tag.getProbability();
           b.append(b.length() > 0 ? "" : "").append(tag.getName() + NSFWProb);
 
+         if(nsfwProbability(NSFWProb)){
+
+           tagsRequest(currentBitmap);
+          }
           b.append(nsfwProbability(NSFWProb));
-          /*if (tag.toString() != ""){
-            bestHashTag = bestHashTag + tag;
-          }*/
-          //b.append(b.length() > 0 ? "" : "").append(tag.getName());
+
         }
         textView.setText("Tags:\n#" + b);
       } else {
@@ -182,16 +186,49 @@ public class RecognitionActivity extends Activity {
     return listOfAllImages;
   }
 
-  private String nsfwProbability(double probability){
+  private Boolean nsfwProbability(double probability){
     if(probability >= 0.85){
+      return true;
+    }
+    return false;
+  }
 
-      return "Not the safest thing to put on the internet!";
+
+  /* below here*/
+  private void tagsRequest(Bitmap bitmap) {
+
+        // Run recognition on a background thread since it makes a network call.
+        new AsyncTask<Bitmap, Void, RecognitionResult>() {
+          @Override protected RecognitionResult doInBackground(Bitmap... bitmaps) {
+            return recognizeNSWFBitmap(bitmaps[0], "");
+          }
+
+        }.execute(bitmap);
+
     }
-    else if (probability <= 0.15){
-      return "Okie Dokie Artichokie!";
-    }
-    else {
-      return "idk bro!";
+
+
+
+  //"nsfw-v0.1"
+
+  /** Sends the given bitmap to Clarifai for recognition and returns the result. */
+  private RecognitionResult recognizeNSWFBitmap(Bitmap bitmap, String model) {
+    try {
+      // Scale down the image. This step is optional. However, sending large images over the
+      // network is slow and  does not significantly improve recognition performance.
+      Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 320,
+              320 * bitmap.getHeight() / bitmap.getWidth(), true);
+
+      // Compress the image as a JPEG.
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      scaled.compress(Bitmap.CompressFormat.JPEG, 90, out);
+      byte[] jpeg = out.toByteArray();
+
+      // Send the JPEG to Clarifai and return the result.
+      return client.recognize(new RecognitionRequest(jpeg).setModel(model)).get(0);
+    } catch (ClarifaiException e) {
+      Log.e(TAG, "Clarifai error", e);
+      return null;
     }
   }
 }
