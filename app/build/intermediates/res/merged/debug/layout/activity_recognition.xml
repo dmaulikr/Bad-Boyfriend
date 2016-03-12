@@ -2,10 +2,10 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:gravity="center_vertical|center"
+    android:gravity="center_vertical|center"
               tools:context=".RecognitionActivity"
-    android:background="@drawable/background">
+    android:background="@drawable/background"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="290dp"
@@ -36,4 +36,4 @@
         android:textSize="50dp" />
 
 </LinearLayout>
-<!-- From: file:/Users/FrankMAC/Documents/Bad-Boyfriend/app/src/main/res/layout/activity_recognition.xml -->
+<!-- From: file:/Users/MARIO/GitHub/Bad-Boyfriend/app/src/main/res/layout/activity_recognition.xml -->

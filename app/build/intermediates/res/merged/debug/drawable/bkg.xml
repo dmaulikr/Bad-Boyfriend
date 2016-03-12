@@ -4,4 +4,4 @@
         android:drawable="@drawable/pressed" />
     <item  android:state_focused="false"
         android:drawable="@drawable/normal" />
-</selector><!-- From: file:/Users/FrankMAC/Documents/Bad-Boyfriend/app/src/main/res/drawable/bkg.xml -->
+</selector><!-- From: file:/Users/MARIO/GitHub/Bad-Boyfriend/app/src/main/res/drawable/bkg.xml -->

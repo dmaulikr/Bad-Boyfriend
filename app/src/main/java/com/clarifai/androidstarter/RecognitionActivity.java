@@ -69,7 +69,7 @@ public class RecognitionActivity extends Activity {
             //imageView = (ImageView) findViewById(R.id.image_view);
             //View layout = findViewById(R.id.lolwtf);
             myBitmap = Bitmap.createScaledBitmap(myBitmap, 200, 200, true);
-            imageView.setImageBitmap(myBitmap);
+            //imageView.setImageBitmap(myBitmap);
         }
 
         //Creates loading button, and displays loading bar
