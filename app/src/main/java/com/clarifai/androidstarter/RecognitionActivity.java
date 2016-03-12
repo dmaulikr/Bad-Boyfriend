@@ -2,11 +2,13 @@ package com.clarifai.androidstarter;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +23,7 @@ import com.clarifai.api.exception.ClarifaiException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static android.provider.MediaStore.Images.Media;
 
@@ -34,7 +37,7 @@ public class RecognitionActivity extends Activity {
   private static final int CODE_PICK = 1;
 
   private final ClarifaiClient client = new ClarifaiClient(Credentials.CLIENT_ID,
-      Credentials.CLIENT_SECRET);
+          Credentials.CLIENT_SECRET);
   private Button selectButton;
   private ImageView imageView;
   private TextView textView;
@@ -42,16 +45,14 @@ public class RecognitionActivity extends Activity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_recognition);
-    imageView = (ImageView) findViewById(R.id.image_view);
     textView = (TextView) findViewById(R.id.text_view);
-    selectButton = (Button) findViewById(R.id.select_button);
-    selectButton.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        // Send an intent to launch the media picker.
-        final Intent intent = new Intent(Intent.ACTION_PICK, Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, CODE_PICK);
-      }
-    });
+    ArrayList<String> imagePaths = getImagesPath(this);
+    textView = (TextView) findViewById(R.id.text_view);
+
+    for (int i = 1; i < imagePaths.size(); i++) {
+      textView.setText(imagePaths.get(i-1)+ " \n" + imagePaths.get(i));
+
+    }
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -90,7 +91,7 @@ public class RecognitionActivity extends Activity {
       BitmapFactory.decodeStream(getContentResolver().openInputStream(uri), null, opts);
       int sampleSize = 1;
       while (opts.outWidth / (2 * sampleSize) >= imageView.getWidth() &&
-             opts.outHeight / (2 * sampleSize) >= imageView.getHeight()) {
+              opts.outHeight / (2 * sampleSize) >= imageView.getHeight()) {
         sampleSize *= 2;
       }
 
@@ -131,12 +132,16 @@ public class RecognitionActivity extends Activity {
       if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
         // Display the list of tags in the UI.
         StringBuilder b = new StringBuilder();
+
         for (Tag tag : result.getTags()) {
-          Double prob = tag.getProbability();
+          Double SFWProb = tag.getProbability();
+          b.append(b.length() > 0 ? "" : "").append(tag.getName() + SFWProb);
+          b.append(nsfwProbability(SFWProb));
 
-          b.append(b.length() > 0 ? "" : "").append(tag.getName() + prob);
+          Double NSFWProb = tag.getProbability();
+          b.append(b.length() > 0 ? "" : "").append(tag.getName() + NSFWProb);
 
-          b.append(nsfwProbability(prob));
+          b.append(nsfwProbability(NSFWProb));
           /*if (tag.toString() != ""){
             bestHashTag = bestHashTag + tag;
           }*/
@@ -151,6 +156,30 @@ public class RecognitionActivity extends Activity {
       textView.setText("Sorry, there was an error recognizing your image.");
     }
     selectButton.setEnabled(true);
+  }
+  public static ArrayList<String> getImagesPath(Activity activity) {
+    Uri uri;
+    ArrayList<String> listOfAllImages = new ArrayList<String>();
+    Cursor cursor;
+    int column_index_data, column_index_folder_name;
+    String PathOfImage = null;
+    uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+    String[] projection = {MediaStore.MediaColumns.DATA,
+            MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
+
+    cursor = activity.getContentResolver().query(uri, projection, null,
+            null, null);
+
+    column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+    column_index_folder_name = cursor
+            .getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+    while (cursor.moveToNext()) {
+      PathOfImage = cursor.getString(column_index_data);
+
+      listOfAllImages.add(PathOfImage);
+    }
+    return listOfAllImages;
   }
 
   private String nsfwProbability(double probability){
