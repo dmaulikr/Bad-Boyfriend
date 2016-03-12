@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.clarifai.api.Tag;
 import com.clarifai.api.exception.ClarifaiException;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -51,12 +53,28 @@ public class RecognitionActivity extends Activity {
     textView = (TextView) findViewById(R.id.text_view);
 
     for (int i = 1; i < imagePaths.size(); i++) {
-      textView.setText(imagePaths.get(i-1)+ " \n" + imagePaths.get(i));
+        File imgFile = new  File(imagePaths.get(i));
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+
+        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(),bmOptions);
+          imageView = (ImageView) findViewById(R.id.image_view);
+         View layout= findViewById(R.id.lolwtf);
+       myBitmap = Bitmap.createScaledBitmap(myBitmap,200,200,true);
+       imageView.setImageBitmap(myBitmap);
+
+
+      }
 
 
 
     }
-  }
+
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
     super.onActivityResult(requestCode, resultCode, intent);
     if (requestCode == CODE_PICK && resultCode == RESULT_OK) {

@@ -5,7 +5,12 @@
               android:orientation="vertical"
               android:gravity="center"
               tools:context=".RecognitionActivity"
-    android:background="@drawable/background">
+    android:id="@+id/lolwtf"
+>
+
+    <!--
+         android:background="@drawable/background"
+     -->
 
   <ImageView
       android:id="@+id/image_view"
