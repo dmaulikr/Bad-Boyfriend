@@ -53,30 +53,29 @@ public class RecognitionActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recognition);
         ArrayList<String> imagePaths = getImagesPath(this);
-        //textView = (TextView) findViewById(R.id.text_view);
 
         for (int i = 1; i < imagePaths.size(); i++) {
             File imgFile = new File(imagePaths.get(i));
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
             BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(), bmOptions);
-            //imageView = (ImageView) findViewById(R.id.image_view);
-            //View layout = findViewById(R.id.lolwtf);
-            myBitmap = Bitmap.createScaledBitmap(myBitmap, 200, 200, true);
-            //imageView.setImageBitmap(myBitmap);
+
+            myBitmap = Bitmap.createScaledBitmap(myBitmap, 320,
+                    320 * myBitmap.getHeight() / myBitmap.getWidth(), true);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            myBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            byte[] jpeg = out.toByteArray();
+
+          // RecognitionResult result = client.recognize(new RecognitionRequest(jpeg).setModel("nsfw-v0.1")).get(0);
+
         }
 
+
         //Creates loading button, and displays loading bar
-        Button downloadButton = (Button)findViewById(R.id.select_button_displayProgressDialog);
+        Button downloadButton = (Button) findViewById(R.id.select_button_displayProgressDialog);
         downloadButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 progressDialog = new ProgressDialog(RecognitionActivity.this);
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 progressDialog.setTitle("Processing");
@@ -106,21 +105,9 @@ public class RecognitionActivity extends Activity {
 
 
 
-
-
-
-
-
             //
         }
     }
-   /* textView = (TextView) findViewById(R.id.text_view);
-    ArrayList<String> imagePaths = getImagesPath(this);
-    textView = (TextView) findViewById(R.id.text_view);
-    for (int i = 1; i < imagePaths.size(); i++) {
-      textView.setText(imagePaths.get(i-1)+ " \n" + imagePaths.get(i));
-    }
-*/
 
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
