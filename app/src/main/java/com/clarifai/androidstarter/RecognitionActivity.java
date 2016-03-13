@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.NetworkOnMainThreadException;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -40,36 +41,13 @@ public class RecognitionActivity extends Activity {
 
     private final ClarifaiClient client = new ClarifaiClient(Credentials.CLIENT_ID,
             Credentials.CLIENT_SECRET);
-    private Button selectButton;
-    private ImageView imageView;
-    private TextView textView;
     private Bitmap currentBitmap;
     private ProgressDialog progressDialog;
-
-    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recognition);
-        ArrayList<String> imagePaths = getImagesPath(this);
-
-        for (int i = 1; i < imagePaths.size(); i++) {
-            File imgFile = new File(imagePaths.get(i));
-
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(), bmOptions);
-
-            myBitmap = Bitmap.createScaledBitmap(myBitmap, 320,
-                    320 * myBitmap.getHeight() / myBitmap.getWidth(), true);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            myBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            byte[] jpeg = out.toByteArray();
-
-          // RecognitionResult result = client.recognize(new RecognitionRequest(jpeg).setModel("nsfw-v0.1")).get(0);
-
-        }
 
 
         //Creates loading button, and displays loading bar
@@ -90,6 +68,7 @@ public class RecognitionActivity extends Activity {
     //Progress Thread for loading screen
     private class progressThread extends Thread{
         public void run(){
+
             for (int count=0;count<=100;count++){
                 try {
                     Thread.sleep(100);
@@ -103,8 +82,6 @@ public class RecognitionActivity extends Activity {
             final Intent intent = new Intent(Intent.ACTION_PICK, Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, CODE_PICK);
 
-
-
             //
         }
     }
@@ -113,29 +90,37 @@ public class RecognitionActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == CODE_PICK && resultCode == RESULT_OK) {
+            super.onActivityResult(requestCode, resultCode, intent);
+            if (requestCode == CODE_PICK && resultCode == RESULT_OK) {
 
-            Bitmap bitmap = loadBitmapFromUri(intent.getData());
-            currentBitmap = bitmap;
-            if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
-                textView.setText(intent.toString());
-                selectButton.setEnabled(false);
+                        Bitmap bitmap = loadBitmapFromUri(intent.getData());
+/*
+            ArrayList<String> imagePaths = getImagesPath(this);
+            for (int i = 1; i < imagePaths.size(); i++) {
+                File imgFile = new File(imagePaths.get(i));
 
-                // Run recognition on a background thread since it makes a network call.
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath(), bmOptions);
+
+                 myBitmap = Bitmap.createScaledBitmap(myBitmap, 320,
+                        320 * myBitmap.getHeight() / myBitmap.getWidth(), true);
+
+                // Compress the image as a JPEG.
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                myBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                byte[] jpeg = out.toByteArray();
+*/
                 new AsyncTask<Bitmap, Void, RecognitionResult>() {
-                    @Override
-                    protected RecognitionResult doInBackground(Bitmap... bitmaps) {
+                    @Override protected RecognitionResult doInBackground(Bitmap... bitmaps) {
                         return recognizeBitmap(bitmaps[0], "nsfw-v0.1");
                     }
-
-                    @Override
-                    protected void onPostExecute(RecognitionResult result) {
+                    @Override protected void onPostExecute(RecognitionResult result) {
                         updateUIForResult(result);
-                    }
-                }.execute(bitmap);
-            } else {
-                textView.setText("Unable to load selected image.");
+                    }}.execute(bitmap);
+
             }
+
         }
     }
 
@@ -151,10 +136,7 @@ public class RecognitionActivity extends Activity {
             opts.inJustDecodeBounds = true;
             BitmapFactory.decodeStream(getContentResolver().openInputStream(uri), null, opts);
             int sampleSize = 1;
-            while (opts.outWidth / (2 * sampleSize) >= imageView.getWidth() &&
-                    opts.outHeight / (2 * sampleSize) >= imageView.getHeight()) {
-                sampleSize *= 2;
-            }
+
 
             opts = new BitmapFactory.Options();
             opts.inSampleSize = sampleSize;
@@ -214,15 +196,14 @@ public class RecognitionActivity extends Activity {
                     b.append(nsfwProbability(NSFWProb));
 
                 }
-                textView.setText("Tags:\n#" + b);
+
             } else {
                 Log.e(TAG, "Clarifai: " + result.getStatusMessage());
-                textView.setText("Sorry, there was an error recognizing your image.");
+                //textView.setText("Sorry, there was an error recognizing your image.");
             }
         } else {
-            textView.setText("Sorry, there was an error recognizing your image.");
+            //textView.setText("Sorry, there was an error recognizing your image.");
         }
-        selectButton.setEnabled(true);
     }
 
     public static ArrayList<String> getImagesPath(Activity activity) {
@@ -293,9 +274,13 @@ public class RecognitionActivity extends Activity {
 
             // Send the JPEG to Clarifai and return the result.
             return client.recognize(new RecognitionRequest(jpeg).setModel(model)).get(0);
+
         } catch (ClarifaiException e) {
             Log.e(TAG, "Clarifai error", e);
             return null;
-        }
+        } //catch (NetworkOnMainThreadException e) {
+           // System.out.println("Caught here again!");
+            //return null;
+        //}
     }
 }
